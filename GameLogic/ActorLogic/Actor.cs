@@ -7,26 +7,17 @@ using UnityEngine;
 
 namespace Assets.Scripts.GameLogic.ActorLogic {
 
-    public interface IActor {
+    public interface IActor: IBattleObject {
 
-        string Name { get; }
         int ActionRank { get; }
         void BeginTurn();
         void MoveTo(Coord coord);
 
     }
 
-    public abstract class Actor : MonoBehaviour, IActor {
+    public abstract class Actor : BattleObject, IActor {
 
         private int actionRank = 0;
-
-        protected IBattle Battle {
-            get { return GetComponentInParent(typeof(IBattle)) as IBattle; }
-        }
-
-        public string Name {
-            get { return name; }
-        }
 
         public int ActionRank {
             get { return actionRank; }

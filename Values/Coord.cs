@@ -1,4 +1,4 @@
-﻿namespace Assets.Scripts {
+﻿namespace Assets.Scripts.Values {
 
     public struct Coord {
 

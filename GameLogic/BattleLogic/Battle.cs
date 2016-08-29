@@ -75,6 +75,10 @@ namespace Assets.Scripts.GameLogic.BattleLogic {
 
         public void OnActorEndTurn() {
             if (ActorEndTurnEvent != null) ActorEndTurnEvent(activeActor);
+            actorQueue.Put(activeActor);
+            activeActor = actorQueue.Unqueue();
+            if (ActorBeginTurnEvent != null) ActorBeginTurnEvent(activeActor);
+            activeActor.BeginTurn();
         }
 
         private void Awake() {
@@ -90,6 +94,7 @@ namespace Assets.Scripts.GameLogic.BattleLogic {
             Debug.Log("Battle starts!");
             activeActor = actorQueue.Unqueue();
             if (BattleStartEvent != null) BattleStartEvent();
+            if (ActorBeginTurnEvent != null) ActorBeginTurnEvent(activeActor);
             activeActor.BeginTurn();
         }
 

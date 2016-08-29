@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Assets.Scripts.BattleUI.UIGrid;
+using Assets.Scripts.BattleUI.BattleGrid;
 using Assets.Scripts.GameLogic.ActorLogic;
 using UnityEngine;
 

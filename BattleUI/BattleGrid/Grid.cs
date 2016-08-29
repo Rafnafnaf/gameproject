@@ -3,7 +3,7 @@ using Assets.Scripts.Values;
 using UnityEngine;
 
 
-namespace Assets.Scripts.BattleUI.UIGrid {
+namespace Assets.Scripts.BattleUI.BattleGrid {
 
     public interface IGrid {
 

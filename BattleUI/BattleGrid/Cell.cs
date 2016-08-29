@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 
-namespace Assets.Scripts.BattleUI.UIGrid {
+namespace Assets.Scripts.BattleUI.BattleGrid {
 
     public interface ICell {
 

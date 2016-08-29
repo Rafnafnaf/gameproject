@@ -1,27 +1,16 @@
-﻿using Assets.Scripts.Values;
-using UnityEngine;
-
-
-namespace Assets.Scripts.GameLogic.BattleLogic {
+﻿namespace Assets.Scripts.GameLogic.BattleLogic {
 
     public interface IBattleObject {
 
-        Coord Coord { get; }
-        string Name { get; }
-
     }
 
-    public class BattleObject: MonoBehaviour, IBattleObject {
+    public class BattleObject : IBattleObject {
 
-        public Coord Coord { get { return Battle.Grid.GetCoord(this); } }
-
-        public string Name {
-            get { return name; }
+        protected BattleObject(IBattle battle) {
+            Battle = battle;
         }
 
-        protected IBattle Battle {
-            get { return GetComponentInParent(typeof(IBattle)) as IBattle; }
-        }
+        protected IBattle Battle { get; private set; }
 
     }
 

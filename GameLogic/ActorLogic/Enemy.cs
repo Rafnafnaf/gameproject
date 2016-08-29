@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
+using Assets.Scripts.GameLogic.BattleLogic;
 
 
 namespace Assets.Scripts.GameLogic.ActorLogic {
@@ -8,18 +8,16 @@ namespace Assets.Scripts.GameLogic.ActorLogic {
 
     }
 
-    public class Enemy : Actor, IEnemy {
+    public class Enemy : Actor {
 
-        public override void BeginTurn() {
-            //var action = GetActions().FirstOrDefault();  
+        public Enemy(IBattle battle, string name, IActionContainer actionContainer) : base(battle, name, actionContainer) {}
+
+        public override ICollection<Actor> GetOpponents() {
+            return Battle.Stage.GetHeroes() as ICollection<Actor>;
         }
 
-        public override ICollection<IActor> GetOpponents() {
-            return Battle.GetHeroes() as ICollection<IActor>;
-        }
-
-        public override ICollection<IActor> GetAllies() {
-            return Battle.GetEnemies() as ICollection<IActor>;
+        public override ICollection<Actor> GetAllies() {
+            return Battle.Stage.GetEnemies() as ICollection<Actor>;
         }
 
     }

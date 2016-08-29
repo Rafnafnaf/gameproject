@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using Assets.Scripts.BattleUI.ActionUI;
-using Assets.Scripts.GameLogic.ActionLogic;
+using Assets.Scripts.GameLogic.BattleLogic;
 
 
 namespace Assets.Scripts.GameLogic.ActorLogic {
@@ -10,29 +8,23 @@ namespace Assets.Scripts.GameLogic.ActorLogic {
 
     }
 
-    public class Hero : Actor, IHero {
+    public class Hero : Actor {
 
-        private ActionUIController actionUIContoller;
+        public Hero(IBattle battle, string name, IActionContainer actionContainer) : base(battle, name, actionContainer) {}
 
         public override void BeginTurn() {
             base.BeginTurn();
         }
 
-        public override ICollection<IActor> GetOpponents() {
-            return Battle.GetEnemies() as ICollection<IActor>;
+        public override ICollection<Actor> GetOpponents() {
+            return Battle.Stage.GetEnemies() as ICollection<Actor>;
         }
 
-        public override ICollection<IActor> GetAllies() {
-            return Battle.GetHeroes() as ICollection<IActor>;
+        public override ICollection<Actor> GetAllies() {
+            return Battle.Stage.GetHeroes() as ICollection<Actor>;
         }
 
-        protected Action GetDefaultAction() {
-            return GetActions().FirstOrDefault();
-        }
-
-        private void OnActionConfirmed() {
-            
-        }
+        private void OnActionConfirmed() {}
 
     }
 

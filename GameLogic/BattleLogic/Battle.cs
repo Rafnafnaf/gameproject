@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using Assets.Scripts.BattleUI.BattleGrid;
-using Assets.Scripts.GameLogic.ActorLogic;
+﻿using Assets.Scripts.GameLogic.ActorLogic;
 using UnityEngine;
 
 
@@ -22,46 +20,51 @@ namespace Assets.Scripts.GameLogic.BattleLogic {
         event BattleStartEvent BattleStartEvent;
 
         IGrid Grid { get; }
+        IActionTimeline ActionTimeline { get; }
+        IStage Stage { get; }
+        IActor ActiveActor { get; }
 
-        ICollection<IActor> GetActors();
-        ICollection<IEnemy> GetEnemies();
-        ICollection<IHero> GetHeroes();
+        void Start();
         bool IsActiveActor(IActor actor);
         bool IsSelectedActor(IActor actor);
         void SelectActor(IActor actor);
+
         void OnActorEndTurn();
 
     }
 
-    public class Battle : MonoBehaviour, IBattle {
+    public class Battle : IBattle {
 
         public event ActorBeginTurnEvent ActorBeginTurnEvent;
         public event ActorEndTurnEvent ActorEndTurnEvent;
         public event ActorSelectedEvent ActorSelectedEvent;
         public event BattleStartEvent BattleStartEvent;
 
-        private ActorQueue actorQueue = null;
-        private IActor activeActor;
         private IActor selectedActor = null;
 
-        public ICollection<IActor> GetActors() {
-            return GetComponentsInChildren(typeof(IActor)) as ICollection<IActor>;
+        public Battle(IStage stage, IGrid grid, IActionTimeline actionTimeline) {
+            Debug.Log("Initializing battle");
+            Stage = stage;
+            Grid = grid;
+            ActionTimeline = actionTimeline;
+            AddActorsToTimeline();
         }
 
-        public ICollection<IEnemy> GetEnemies() {
-            return GetComponentsInChildren(typeof(IEnemy)) as ICollection<IEnemy>;
-        }
+        public IActionTimeline ActionTimeline { get; private set; }
+        public IStage Stage { get; private set; }
+        public IActor ActiveActor { get; private set; }
+        public IGrid Grid { get; private set; }
 
-        public ICollection<IHero> GetHeroes() {
-            return GetComponentsInChildren(typeof(IHero)) as ICollection<IHero>;
-        }
-
-        public IGrid Grid {
-            get { return GetComponentInChildren(typeof(IGrid)) as IGrid; }
+        public void Start() {
+            Debug.Log("Battle starts!");
+            //activeActor = ActionQueue.Unqueue();
+            //if (BattleStartEvent != null) BattleStartEvent();
+            //if (ActorBeginTurnEvent != null) ActorBeginTurnEvent(activeActor);
+            //activeActor.BeginTurn();
         }
 
         public bool IsActiveActor(IActor actor) {
-            return actor == activeActor;
+            return actor == ActiveActor;
         }
 
         public bool IsSelectedActor(IActor actor) {
@@ -74,61 +77,15 @@ namespace Assets.Scripts.GameLogic.BattleLogic {
         }
 
         public void OnActorEndTurn() {
-            if (ActorEndTurnEvent != null) ActorEndTurnEvent(activeActor);
-            actorQueue.Put(activeActor);
-            activeActor = actorQueue.Unqueue();
-            if (ActorBeginTurnEvent != null) ActorBeginTurnEvent(activeActor);
-            activeActor.BeginTurn();
+            if (ActorEndTurnEvent != null) ActorEndTurnEvent(ActiveActor);
+            ActionTimeline.Put(ActiveActor);
+            ActiveActor = ActionTimeline.Unqueue();
+            if (ActorBeginTurnEvent != null) ActorBeginTurnEvent(ActiveActor);
+            ActiveActor.BeginTurn();
         }
 
-        private void Awake() {
-            Debug.Log("Initializing battle");
-            AddActorsToQueue();
-        }
-
-        private void AddActorsToQueue() {
-            foreach (IActor actor in GetActors()) actorQueue.Put(actor);
-        }
-
-        private void Start() {
-            Debug.Log("Battle starts!");
-            activeActor = actorQueue.Unqueue();
-            if (BattleStartEvent != null) BattleStartEvent();
-            if (ActorBeginTurnEvent != null) ActorBeginTurnEvent(activeActor);
-            activeActor.BeginTurn();
-        }
-
-    }
-
-    public class ActorQueue {
-
-        private List<IActor> queue;
-
-        public ActorQueue() {
-            queue = new List<IActor>();
-        }
-
-        public void Put(IActor actor) {
-            if (queue.Count == 0) {
-                queue.Add(actor);
-                return;
-            }
-
-            int index = CalculateIndex(actor);
-            queue.Insert(index, actor);
-        }
-
-        public IActor Unqueue() {
-            IActor result = queue[0];
-            queue.RemoveAt(0);
-            return result;
-        }
-
-        public int CalculateIndex(IActor actor) {
-            for (int i = 0; i < queue.Count; i++) {
-                if (actor.ActionRank > queue[i].ActionRank) return i;
-            }
-            return queue.Count;
+        private void AddActorsToTimeline() {
+            foreach (IActor actor in Stage.GetActors()) ActionTimeline.Put(actor);
         }
 
     }
